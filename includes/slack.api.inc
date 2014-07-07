@@ -1,13 +1,22 @@
 <?php
 
 /**
+ * @file
+ * Slack integration module API functions.
+ */
+
+/**
+ * Send message to the Slack.
+ *
  * @param string $message
  *   The message sent to the channel
  * @param string $channel
  *   The channel in the Slack service to send messages
  * @param string $username
  *   The bot name displayed in the channel
+ *
  * @return bool|object
+ *   Slack response.
  */
 function slack_send_message($message, $channel = '', $username = '') {
   $team_name = slack_get_default_team_name();
@@ -30,6 +39,8 @@ function slack_send_message($message, $channel = '', $username = '') {
 }
 
 /**
+ * Send message to the Slack with more options.
+ *
  * @param string $team_name
  *   Your team name in the Slack
  * @param string $team_token
@@ -40,6 +51,7 @@ function slack_send_message($message, $channel = '', $username = '') {
  *   An associative array, it can contain:
  *     - channel: The channel in the Slack service to send messages
  *     - username: The bot name displayed in the channel
+ *
  * @return object
  *   Can contain:
  *                          success      fail          fail
@@ -50,7 +62,7 @@ function slack_send_message($message, $channel = '', $username = '') {
  */
 function _slack_send_message($team_name, $team_token, $message, $message_options = array()) {
   $headers = array(
-    'Content-Type' => 'application/x-www-form-urlencoded'
+    'Content-Type' => 'application/x-www-form-urlencoded',
   );
   $message_options['text'] = $message;
   $sending_data = 'payload=' . drupal_json_encode($message_options);
@@ -65,19 +77,23 @@ function _slack_send_message($team_name, $team_token, $message, $message_options
 }
 
 /**
+ * Get default team name.
+ *
  * @return string
  *   Get default team name
  */
 function slack_get_default_team_name() {
-  $team_name = variable_get('slack_team', '');
+  $team_name = variable_get('slack_team');
   return $team_name;
 }
 
 /**
+ * Get default team token.
+ *
  * @return string
  *   Get default team token
  */
 function slack_get_default_team_token() {
-  $team_token = variable_get('slack_token', '');
+  $team_token = variable_get('slack_token');
   return $team_token;
 }

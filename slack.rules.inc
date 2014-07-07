@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Slack integration module rules functions.
+ */
+
+/**
  * Implements hook_rules_action_info().
  */
 function slack_rules_action_info() {
@@ -17,13 +22,13 @@ function slack_rules_action_info() {
       'channel' => array(
         'type' => 'text',
         'label' => t('Channel'),
-        'description' => t('It will be using a channel from slack module settings, if you don\'t enter channel here.'),
+        'description' => t("It will be using a channel from slack module settings, if you don't enter channel here."),
         'optional' => TRUE,
       ),
       'username' => array(
         'type' => 'text',
         'label' => t('Username'),
-        'description' => t('It will be using a username from slack module settings, if you don\'t enter username here.'),
+        'description' => t("It will be using a username from slack module settings, if you don't enter username here."),
         'optional' => TRUE,
       ),
     ),
@@ -32,14 +37,14 @@ function slack_rules_action_info() {
 }
 
 /**
- * Rules action for sending a message to the Slack
+ * Rules action for sending a message to the Slack.
  */
 function slack_rules_send_message_action($message, $channel, $username) {
   if (!$channel) {
-    $channel = variable_get('slack_channel', '');
+    $channel = variable_get('slack_channel');
   }
   if (!$username) {
-    $username = variable_get('slack_username', '');
+    $username = variable_get('slack_username');
   }
   slack_send_message($message, $channel, $username);
 }

@@ -21,7 +21,7 @@ function slack_menu() {
     'file path' => drupal_get_path('module', 'system'),
   );
   $items[$slack_module_url . '/config'] = array(
-    'title' => t('Configuration'),
+    'title' => 'Configuration',
     'description' => 'Adjust slack settings.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('slack_configure_form'),
@@ -30,7 +30,7 @@ function slack_menu() {
     'file' => 'includes/pages/slack.admin.inc',
   );
   $items[$slack_module_url . '/test'] = array(
-    'title' => t('Send a message'),
+    'title' => 'Send a message',
     'description' => 'Allows to send a test message to the Slack.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('slack_send_test_message_form'),
