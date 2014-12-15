@@ -9,17 +9,11 @@
  * Slack module admin form.
  */
 function slack_configure_form($form, &$form_state) {
-  $form['slack_team'] = array(
+  $form['slack_webhook_url'] = array(
     '#type' => 'textfield',
-    '#title' => t('Team name'),
-    '#default_value' => slack_get_default_team_name(),
-    '#required' => TRUE,
-  );
-  $form['slack_token'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Team token'),
-    '#description' => t('Add the "Incoming WebHooks" integration in the Slack and take the token there.'),
-    '#default_value' => slack_get_default_team_token(),
+    '#title' => t('Webhook URL'),
+    '#description' => t('Enter your Webhook URL from an Incoming WebHooks integration. It looks like https://hooks.slack.com/services/XXXXXXXXX/YYYYYYYYY/ZZZZZZZZZZZZZZZZZZZZZZZZ'),
+    '#default_value' => slack_get_default_webhook_url(),
     '#required' => TRUE,
   );
   $form['slack_channel'] = array(

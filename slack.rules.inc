@@ -41,10 +41,10 @@ function slack_rules_action_info() {
  */
 function slack_rules_send_message_action($message, $channel, $username) {
   if (!$channel) {
-    $channel = variable_get('slack_channel');
+    $channel = slack_get_default_channel();
   }
   if (!$username) {
-    $username = variable_get('slack_username');
+    $username = slack_get_default_username();
   }
   slack_send_message($message, $channel, $username);
 }
