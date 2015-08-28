@@ -8,16 +8,16 @@
 /**
  * Slack test message form.
  */
-function slack_send_test_message_form($form, &$form_state) {
+function slack_send_test_message_form(&$form_state) {
   $form['slack_test_channel'] = array(
     '#type' => 'textfield',
     '#title' => t('Channel'),
-    '#default_value' => variable_get('slack_channel'),
+    '#default_value' => variable_get('slack_channel', SLACK_DEFAULT_CHANNEL),
   );
   $form['slack_test_username'] = array(
     '#type' => 'textfield',
     '#title' => t('Username'),
-    '#default_value' => variable_get('slack_username'),
+    '#default_value' => variable_get('slack_username', SLACK_DEFAULT_USERNAME),
   );
   $form['slack_test_message'] = array(
     '#type' => 'textarea',

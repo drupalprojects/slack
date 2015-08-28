@@ -3,6 +3,8 @@
 define('SLACK_CODE_OK', 200);
 define('SLACK_CODE_NOT_FOUND', 404);
 define('SLACK_CODE_SERVER_ERROR', 500);
+define('SLACK_DEFAULT_CHANNEL', '#general');
+define('SLACK_DEFAULT_USERNAME', 'Slackbot');
 
 require_once 'includes/slack.api.inc';
 
@@ -11,7 +13,7 @@ require_once 'includes/slack.api.inc';
  */
 function slack_menu() {
   $items = array();
-  $slack_module_url = 'admin/config/services/slack';
+  $slack_module_url = 'admin/content/slack';
   $items[$slack_module_url] = array(
     'title' => 'Slack',
     'description' => 'Configure slack module.',

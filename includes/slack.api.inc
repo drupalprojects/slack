@@ -19,22 +19,24 @@
  *   Slack response.
  */
 function slack_send_message($message, $channel = '', $username = '') {
-  $team_name = slack_get_default_team_name();
-  if (!$team_name) {
-    return FALSE;
-  }
-  $team_token = slack_get_default_team_token();
-  if (!$team_token) {
+  $webhook_url = slack_get_default_webhook_url();
+  if (!$webhook_url) {
     return FALSE;
   }
   $message_options = array();
   if ($channel) {
     $message_options['channel'] = $channel;
   }
+  else {
+    $message_options['channel'] = slack_get_default_channel();
+  }
   if ($username) {
     $message_options['username'] = $username;
   }
-  $result = _slack_send_message($team_name, $team_token, $message, $message_options);
+  else {
+    $message_options['username'] = slack_get_default_username();
+  }
+  $result = _slack_send_message($webhook_url, $message, $message_options);
   return $result;
 }
 
@@ -60,40 +62,50 @@ function slack_send_message($message, $channel = '', $username = '') {
  *     - code:                200        404           500
  *     - error:               -          Not found     Server Error
  */
-function _slack_send_message($team_name, $team_token, $message, $message_options = array()) {
+function _slack_send_message($webhook_url, $message, $message_options = array()) {
   $headers = array(
     'Content-Type' => 'application/x-www-form-urlencoded',
   );
   $message_options['text'] = $message;
-  $sending_data = 'payload=' . drupal_json_encode($message_options);
-  $options = array(
-    'method' => 'POST',
-    'data' => $sending_data,
-    'headers' => $headers,
-  );
-  $sending_url = 'https://' . $team_name . '.slack.com/services/hooks/incoming-webhook?token=' . $team_token;
-  $result = drupal_http_request($sending_url, $options);
+  $sending_data = 'payload=' . drupal_to_js($message_options);
+  $result = drupal_http_request($webhook_url, $headers, 'POST', $sending_data);
   return $result;
 }
 
-/**
- * Get default team name.
- *
- * @return string
- *   Get default team name
- */
-function slack_get_default_team_name() {
-  $team_name = variable_get('slack_team');
-  return $team_name;
+/* Get default Webhook URL.
+*
+* @return string
+*   Get default Webhook URL.
+*/
+function slack_get_default_webhook_url() {
+  $channel = variable_get('slack_webhook_url', NULL);
+  return $channel;
 }
 
 /**
- * Get default team token.
+ * Get default team channel.
  *
  * @return string
- *   Get default team token
+ *   Get default team channel
  */
-function slack_get_default_team_token() {
-  $team_token = variable_get('slack_token');
-  return $team_token;
+function slack_get_default_channel() {
+  $channel = variable_get('slack_channel', SLACK_DEFAULT_CHANNEL);
+  if (empty($channel)) {
+    $channel = SLACK_DEFAULT_CHANNEL;
+  }
+  return $channel;
+}
+
+/**
+ * Get default Slack bot username.
+ *
+ * @return string
+ *   Get default Slack bot username
+ */
+function slack_get_default_username() {
+  $username = variable_get('slack_username', SLACK_DEFAULT_USERNAME);
+  if (empty($username)) {
+    $username = SLACK_DEFAULT_USERNAME;
+  }
+  return $username;
 }

@@ -13,25 +13,23 @@ function slack_rules_action_info() {
   $actions['slack_send_message'] = array(
     'base' => 'slack_rules_send_message_action',
     'label' => t('Slack send message'),
-    'group' => t('Slack'),
-    'parameter' => array(
+    'arguments' => array(
       'message' => array(
-        'type' => 'text',
+        'type' => 'string',
         'label' => t('Sending message'),
       ),
       'channel' => array(
-        'type' => 'text',
+        'type' => 'string',
         'label' => t('Channel'),
-        'description' => t("It will be using a channel from slack module settings, if you don't enter channel here."),
-        'optional' => TRUE,
+        'description' => t("Enter a channel name here. A channel name from the Slack module settings is '" . slack_get_default_channel() . "'."),
       ),
       'username' => array(
-        'type' => 'text',
+        'type' => 'string',
         'label' => t('Username'),
-        'description' => t("It will be using a username from slack module settings, if you don't enter username here."),
-        'optional' => TRUE,
+        'description' => t("Enter a username here. A username from the Slack module settings is '" . slack_get_default_username() . "'."),
       ),
     ),
+    'module' => 'Slack',
   );
   return $actions;
 }
@@ -40,11 +38,5 @@ function slack_rules_action_info() {
  * Rules action for sending a message to the Slack.
  */
 function slack_rules_send_message_action($message, $channel, $username) {
-  if (!$channel) {
-    $channel = variable_get('slack_channel');
-  }
-  if (!$username) {
-    $username = variable_get('slack_username');
-  }
   slack_send_message($message, $channel, $username);
 }
