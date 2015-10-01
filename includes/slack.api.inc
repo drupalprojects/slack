@@ -36,6 +36,13 @@ function slack_send_message($message, $channel = '', $username = '') {
   else {
     $message_options['username'] = slack_get_default_username();
   }
+  $icon_type = variable_get('slack_icon_type');
+  if ($icon_type == 'emoji') {
+    $message_options['icon_emoji'] = slack_get_default_icon_emoji();
+  }
+  elseif ($icon_type == 'image') {
+    $message_options['icon_url'] = slack_get_default_icon_url();
+  }
   $result = _slack_send_message($webhook_url, $message, $message_options);
   return $result;
 }
@@ -53,6 +60,8 @@ function slack_send_message($message, $channel = '', $username = '') {
  *   An associative array, it can contain:
  *     - channel: The channel in the Slack service to send messages
  *     - username: The bot name displayed in the channel
+ *     - icon_emoji: The bot icon displayed in the channel
+ *     - icon_url: The bot icon displayed in the channel
  *
  * @return object
  *   Can contain:
@@ -136,4 +145,37 @@ function slack_get_default_channel() {
 function slack_get_default_username() {
   $username = variable_get('slack_username');
   return $username;
+}
+
+/**
+ * Get default Slack bot icon.
+ *
+ * @return string
+ *   Get default Slack bot icon.
+ */
+function slack_get_default_icon_url() {
+  $icon = variable_get('slack_icon_url');
+  return $icon;
+}
+
+/**
+ * Get default Slack bot icon emoji.
+ *
+ * @return string
+ *   Get default Slack bot icon emoji.
+ */
+function slack_get_default_icon_emoji() {
+  $icon = variable_get('slack_icon_emoji');
+  return $icon;
+}
+
+/**
+ * Get default Slack bot image type radios value.
+ *
+ * @return string
+ *   Get default Slack bot image type radios value.
+ */
+function slack_get_default_icon_type() {
+  $select_image = variable_get('slack_icon_type', 'none');
+  return $select_image;
 }
