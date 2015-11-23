@@ -18,12 +18,11 @@
  * @return bool|object
  *   Slack response.
  */
-function slack_send_message($message, $channel = '', $username = '') {
-  $webhook_url = slack_get_default_webhook_url();
+function slack_send_message($webhook_url, $message, $channel = '', $username = '', $icon_options = array()) {
   if (!$webhook_url) {
+    drupal_set_message('Please, enter the webhook value and try again', 'error');
     return FALSE;
   }
-  $message_options = array();
   if ($channel) {
     $message_options['channel'] = $channel;
   }
@@ -36,12 +35,22 @@ function slack_send_message($message, $channel = '', $username = '') {
   else {
     $message_options['username'] = slack_get_default_username();
   }
-  $icon_type = variable_get('slack_icon_type');
-  if ($icon_type == 'emoji') {
-    $message_options['icon_emoji'] = slack_get_default_icon_emoji();
+
+  if ($icon_options['type'] == 'emoji') {
+    if ($icon_options['emoji']) {
+      $message_options['icon_emoji'] = $icon_options['emoji'];
+    }
+    else {
+      $message_options['icon_emoji'] = slack_get_default_icon_emoji();
+    }
   }
-  elseif ($icon_type == 'image') {
-    $message_options['icon_url'] = slack_get_default_icon_url();
+  elseif ($icon_options['type'] == 'image') {
+    if ($icon_options['icon']) {
+      $message_options['icon_url'] = $icon_options['icon'];
+    }
+    else {
+      $message_options['icon_url'] = slack_get_default_icon_url();
+    }
   }
   $result = _slack_send_message($webhook_url, $message, $message_options);
   return $result;
@@ -154,8 +163,8 @@ function slack_get_default_username() {
  *   Get default Slack bot icon.
  */
 function slack_get_default_icon_url() {
-  $icon = variable_get('slack_icon_url');
-  return $icon;
+  $icon['url'] = variable_get('slack_icon_url');
+  return $icon['url'];
 }
 
 /**
@@ -165,8 +174,8 @@ function slack_get_default_icon_url() {
  *   Get default Slack bot icon emoji.
  */
 function slack_get_default_icon_emoji() {
-  $icon = variable_get('slack_icon_emoji');
-  return $icon;
+  $icon['emoji'] = variable_get('slack_icon_emoji');
+  return $icon['emoji'];
 }
 
 /**
