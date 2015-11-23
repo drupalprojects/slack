@@ -8,10 +8,9 @@
 
 namespace Drupal\slack;
 
+use Drupal;
 use GuzzleHttp;
 use GuzzleHttp\Psr7\Request;
-use Drupal\Core\Entity\Exception;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Class SlackAPI.
@@ -31,26 +30,20 @@ class SlackAPI {
    * @return bool|object
    *   Slack response.
    */
-  function _send($webhook_url, $message, $channel = '', $username = '') {
-    $config = $this->prepareMessage($webhook_url, $channel, $username);
-    $result = $this->sendMessage(
-        $config['webhook_url'], $message, $config['message_options']
+  static function slackSendMessage($webhook_url, $message, $channel = '', $username = '') {
+    if (empty($webhook_url)) {
+      drupal_set_message(t('You need to enter a webhook!'), 'error');
+      return false;
+    }
+    $config = SlackAPI::prepareMessage($webhook_url, $channel, $username);
+    $result = SlackAPI::slackSendRequest(
+      $config['webhook_url'], $message, $config['message_options']
     );
     return $result;
   }
 
-  function prepareMessage($webhook_url, $channel, $username) {
+  static function prepareMessage($webhook_url, $channel, $username) {
     $config = \Drupal::config('slack.settings');
-
-    if (!empty($webhook_url)) {
-      $webhook = $webhook_url;
-    }
-    elseif (!empty($config->get('slack_webhook_url'))) {
-      $webhook = $config->get('slack_webhook_url');
-    }
-    if (!$config->get('slack_webhook_url')) {
-      throw new \Exception();
-    }
     $message_options = array();
     if (!empty($channel)) {
       $message_options['channel'] = $channel;
@@ -71,8 +64,9 @@ class SlackAPI {
     elseif ($icon_type == 'image') {
       $message_options['icon_url'] = $config->get('slack_icon_url');
     }
+    $message_options['as_user'] = true;
     return [
-      'webhook_url' => $webhook,
+      'webhook_url' => $webhook_url,
       'message_options' => $message_options
     ];
   }
@@ -101,23 +95,27 @@ class SlackAPI {
    *     - code:                200        404           500
    *     - error:               -          Not found     Server Error
    */
-  function sendMessage($webhook_url, $message, $message_options = array()) {
+  static function slackSendRequest($webhook_url, $message, $message_options = array()) {
     $headers = array(
       'Content-Type' => 'application/x-www-form-urlencoded',
     );
-    $message_options['text'] = $this->processMessage($message);
+    $message_options['text'] = SlackAPI::processMessage($message);
     $sending_data = 'payload=' . json_encode($message_options);
     $sending_url = $webhook_url;
     $client = new GuzzleHttp\Client();
     $request = new Request('POST', $sending_url, $headers, $sending_data);
     try {
       $response = $client->send($request, ['timeout' => 2]);
-      drupal_set_message(t('Message successfully send.'),'status');
+      drupal_set_message(t('Message was successfully sent!'), 'status');
       return $response;
-    } catch (\Exception $e) {
-      drupal_set_message(t('Message was\'nt send. Check your config and try again.') . $e->getMessage(), 'warning');
-      $url = new RedirectResponse('../slack/config');
-      $url->send();
+    } catch (GuzzleHttp\Exception\ServerException $e) {
+      drupal_set_message(t('Server error! It may appear if you try to use unexisting chatroom.'), 'error');
+      return false;
+    } catch (GuzzleHttp\Exception\RequestException $e) {
+      drupal_set_message(t('Request error! It may appear if you entered the invalid Webhook value.'), 'error');
+      return false;
+    } catch (GuzzleHttp\Exception\ConnectException $e) {
+      drupal_set_message(t("Connection error! Something wrong with your connection. Message was'nt sent."), 'error');
       return false;
     }
   }
@@ -131,7 +129,7 @@ class SlackAPI {
    * @return string
    *   Replaces links with slack friendly tags. Strips all other html.
    */
-  function processMessage($message) {
+  static function processMessage($message) {
     $regexp = "<a\s[^>]*href=(\"??)([^\" >]*?)\\1[^>]*>(.*)<\/a>";
     if (preg_match_all("/$regexp/siU", $message, $matches, PREG_SET_ORDER)) {
       $i = 1;

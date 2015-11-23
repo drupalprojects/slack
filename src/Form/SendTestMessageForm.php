@@ -9,9 +9,7 @@ namespace Drupal\slack\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-//use Drupal\Core\Url; /** del?* */
-use Drupal\slack\SlackAPI;
-use Drupal\slack\Controller\SlackController;
+use Drupal\slack;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
@@ -71,8 +69,7 @@ class SendTestMessageForm extends FormBase {
     $username = $config->get('slack_username');
     $webhook_url = $config->get('slack_webhook_url');
     
-    $SlackAPI = SlackController::GetSlackApiItem();
-    $SlackAPI->_send($webhook_url, $message, $channel, $username);
+    slack\SlackAPI::slackSendMessage($webhook_url, $message, $channel, $username);
   }
 
 }
