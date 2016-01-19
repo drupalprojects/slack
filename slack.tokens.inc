@@ -46,7 +46,7 @@ function slack_token_info() {
     'dynamic' => TRUE,
     'global_types' => TRUE,
   );
-  dsm($tokens);
+
   return array('tokens' => array('slack' => $tokens));
 }
 
