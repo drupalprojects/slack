@@ -30,9 +30,17 @@ function slack_send_test_message_form($form, &$form_state) {
  * Submit handler for slack test message form.
  */
 function slack_send_test_message_form_submit($form, &$form_state) {
+  $webhook_url = slack_get_default_webhook_url();
   $channel = $form_state['values']['slack_test_channel'];
   $message = $form_state['values']['slack_test_message'];
-  $result = slack_send_message($message, $channel);
+
+  $icon_type = variable_get('slack_icon_type');
+  $icon = variable_get('slack_icon_url');
+  $emoji = variable_get('slack_icon_emoji');
+
+  $icon_options = array('icon'=>$icon, 'emoji'=>$emoji, 'type'=>$icon_type);
+
+  $result = slack_send_message($webhook_url, $message, $channel, '', $icon_options);
   if (!$result) {
     drupal_set_message(t("Message wasn't sent. Please, check slack module configuration."));
   }
