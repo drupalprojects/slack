@@ -77,7 +77,7 @@ function slack_rules_send_message_action($webhook_url, $channel, $username, $mes
     $emoji = slack_get_default_icon_emoji();
   }
   if (!$icon) {
-    $icon = slack_get_default_icon_icon();
+    $icon = slack_get_default_icon_url();
   }
   $icon_options = array('icon' => $icon, 'emoji' => $emoji, 'type' => $type_token);
   slack_send_message($webhook_url, $message, $channel, $username, $icon_options);
