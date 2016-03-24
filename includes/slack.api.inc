@@ -72,11 +72,12 @@ function _slack_send_message($webhook_url, $message, $message_options = array())
   return $result;
 }
 
-/* Get default Webhook URL.
-*
-* @return string
-*   Get default Webhook URL.
-*/
+/**
+ * Get default Webhook URL.
+ *
+ * @return string
+ *   Get default Webhook URL.
+ */
 function slack_get_default_webhook_url() {
   $channel = variable_get('slack_webhook_url', NULL);
   return $channel;
