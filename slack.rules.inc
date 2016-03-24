@@ -55,6 +55,26 @@ function slack_rules_action_info() {
         'description' => t("It will be using a icon url from slack module settings, if you don't enter username here."),
         'optional' => TRUE,
       ),
+      'color' => array(
+        'type' => 'text',
+        'label' => t('Message color'),
+        'optional' => TRUE,
+      ),
+      'pretext' => array(
+        'type' => 'text',
+        'label' => t('Message pretext'),
+        'optional' => TRUE,
+      ),
+      'title' => array(
+        'type' => 'text',
+        'label' => t('Message title'),
+        'optional' => TRUE,
+      ),
+      'title_link ' => array(
+        'type' => 'text',
+        'label' => t('Link for message title'),
+        'optional' => TRUE,
+      ),
     ),
   );
   return $actions;
@@ -63,7 +83,7 @@ function slack_rules_action_info() {
 /**
  * Rules action for sending a message to the Slack.
  */
-function slack_rules_send_message_action($webhook_url, $channel, $username, $message, $type_token = '', $emoji = '', $icon = '') {
+function slack_rules_send_message_action($webhook_url, $channel, $username, $message, $type_token = '', $emoji = '', $icon = '', $color = '', $pretext = '', $title = '', $title_link = '') {
   if (!$webhook_url) {
     $webhook_url = slack_get_default_webhook_url();
   }
@@ -79,6 +99,13 @@ function slack_rules_send_message_action($webhook_url, $channel, $username, $mes
   if (!$icon) {
     $icon = slack_get_default_icon_url();
   }
+
+  $attachment_options = array();
+  $attachment_options['color'] = $color;
+  $attachment_options['pretext'] = $pretext;
+  $attachment_options['title'] = $title;
+  $attachment_options['title_link'] = $title_link;
+
   $icon_options = array('icon' => $icon, 'emoji' => $emoji, 'type' => $type_token);
-  slack_send_message($webhook_url, $message, $channel, $username, $icon_options);
+  slack_send_message($webhook_url, $message, $channel, $username, $icon_options, $attachment_options);
 }
