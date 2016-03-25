@@ -90,5 +90,39 @@ function slack_send_test_message_form_submit($form, &$form_state) {
   }
   else {
     drupal_set_message(t("Message wasn't sent."), 'error');
+    slack_watchdog_sending_error($result);
   }
+}
+
+/**
+ * Create a log in watchdog containing Slack's response information when message
+ * sending was failed.
+ */
+function slack_watchdog_sending_error($result) {
+  $message = '';
+  $status_message = $result->status_message;
+  if (isset($status_message)) {
+    $message .= "<strong>Error message:</strong> $status_message";
+  }
+
+  $code = $result->code;
+  if (isset($code)) {
+    $message .= "<br /><strong>Code:</strong> $code";
+  }
+
+  $request = $result->request;
+  if (isset($request)) {
+    $message .= "<br /><strong>Request:</strong> $request";
+  }
+
+  $headers = $result->headers;
+  if (isset($headers)) {
+    $message .= "<br /><br /><strong>Headers:</strong><br><ul>";
+    foreach ($headers as $key => $header) {
+      $message .= "<li>$key: $header</li>";
+    }
+    $message .= '</ul>';
+  }
+
+  watchdog('slack', $message, array(), WATCHDOG_ERROR);
 }
