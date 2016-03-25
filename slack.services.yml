@@ -1,0 +1,4 @@
+services:
+  slack:
+    class: Drupal\slack\Slack
+    arguments: ['@config.factory', '@http_client']

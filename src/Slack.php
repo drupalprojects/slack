@@ -2,20 +2,38 @@
 
 /**
  * @file
- * Contains Drupal\slack\SlackAPI.
- * Slack integration module API functions.
+ * Contains \Drupal\slack\Slack.
  */
 
 namespace Drupal\slack;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use GuzzleHttp\ClientInterface;
 
-use Drupal;
-use GuzzleHttp;
-use GuzzleHttp\Psr7\Request;
 
 /**
- * Class SlackAPI.
+ * Send messages to Slack.
  */
-class SlackAPI {
+class Slack {
+  /**
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  private $config;
+
+  /**
+   * @var \GuzzleHttp\ClientInterface
+   */
+  private $httpClient;
+
+  /**
+   * Constructs a Slack object.
+   *
+   * @param ConfigFactoryInterface $config
+   * @param \GuzzleHttp\ClientInterface $http_client
+   */
+  public function __construct(ConfigFactoryInterface $config, ClientInterface $http_client) {
+    $this->config = $config;
+    $this->httpClient = $http_client;
+  }
 
   /**
    * Send message to the Slack.
@@ -30,20 +48,28 @@ class SlackAPI {
    * @return bool|object
    *   Slack response.
    */
-  static function slackSendMessage($webhook_url, $message, $channel = '', $username = '') {
+  public function sendMessage($webhook_url, $message, $channel = '', $username = '') {
     if (empty($webhook_url)) {
       drupal_set_message(t('You need to enter a webhook!'), 'error');
       return false;
     }
-    $config = SlackAPI::prepareMessage($webhook_url, $channel, $username);
-    $result = SlackAPI::slackSendRequest(
+    $config = $this->prepareMessage($webhook_url, $channel, $username);
+    $result = $this->sendRequest(
       $config['webhook_url'], $message, $config['message_options']
     );
     return $result;
   }
 
-  static function prepareMessage($webhook_url, $channel, $username) {
-    $config = \Drupal::config('slack.settings');
+  /**
+   * Prepare message meta fields for Slack.
+   *
+   * @param $webhook_url
+   * @param $channel
+   * @param $username
+   * @return array
+   */
+  private function prepareMessage($webhook_url, $channel, $username) {
+    $config = $this->config->get('slack.settings');
     $message_options = array();
     if (!empty($channel)) {
       $message_options['channel'] = $channel;
@@ -95,28 +121,26 @@ class SlackAPI {
    *     - code:                200        404           500
    *     - error:               -          Not found     Server Error
    */
-  static function slackSendRequest($webhook_url, $message, $message_options = array()) {
+  private function sendRequest($webhook_url, $message, $message_options = array()) {
     $headers = array(
       'Content-Type' => 'application/x-www-form-urlencoded',
     );
-    $message_options['text'] = SlackAPI::processMessage($message);
+    $message_options['text'] = $this->processMessage($message);
     $sending_data = 'payload=' . json_encode($message_options);
-    $sending_url = $webhook_url;
-    $client = new GuzzleHttp\Client();
-    $request = new Request('POST', $sending_url, $headers, $sending_data);
+
     try {
-      $response = $client->send($request, ['timeout' => 2]);
-      drupal_set_message(t('Message was successfully sent!'), 'status');
+      $response = $this->httpClient->request('POST', $webhook_url, array('headers' => $headers, 'body' => $sending_data, 'timeout' => 2));
+      \Drupal::logger('slack')->info('Message was successfully sent!');
       return $response;
-    } catch (GuzzleHttp\Exception\ServerException $e) {
-      drupal_set_message(t('Server error! It may appear if you try to use unexisting chatroom.'), 'error');
-      return false;
-    } catch (GuzzleHttp\Exception\RequestException $e) {
-      drupal_set_message(t('Request error! It may appear if you entered the invalid Webhook value.'), 'error');
-      return false;
-    } catch (GuzzleHttp\Exception\ConnectException $e) {
-      drupal_set_message(t("Connection error! Something wrong with your connection. Message was'nt sent."), 'error');
-      return false;
+    } catch (\GuzzleHttp\Exception\ServerException $e) {
+      \Drupal::logger('slack')->error('Server error! It may appear if you try to use unexisting chatroom.');
+      return FALSE;
+    } catch (\GuzzleHttp\Exception\RequestException $e) {
+      \Drupal::logger('slack')->error('Request error! It may appear if you entered the invalid Webhook value.');
+      return FALSE;
+    } catch (\GuzzleHttp\Exception\ConnectException $e) {
+      \Drupal::logger('slack')->error('Connection error! Something wrong with your connection. Message was\'nt sent.');
+      return FALSE;
     }
   }
 
@@ -129,7 +153,7 @@ class SlackAPI {
    * @return string
    *   Replaces links with slack friendly tags. Strips all other html.
    */
-  static function processMessage($message) {
+  private function processMessage($message) {
     $regexp = "<a\s[^>]*href=(\"??)([^\" >]*?)\\1[^>]*>(.*)<\/a>";
     if (preg_match_all("/$regexp/siU", $message, $matches, PREG_SET_ORDER)) {
       $i = 1;
@@ -146,5 +170,4 @@ class SlackAPI {
     }
     return $message;
   }
-
 }

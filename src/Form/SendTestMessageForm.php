@@ -50,7 +50,7 @@ class SendTestMessageForm extends FormBase {
     if (empty($config->get('slack_webhook_url'))) {
       $url = new RedirectResponse('../slack/config');
       $url->send();
-      return false;
+      return FALSE;
     }
     else {
       return $form;
@@ -61,15 +61,15 @@ class SendTestMessageForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $config = \Drupal::config('slack.settings');
+    $config = $this->config('slack.settings');
     
     $channel = $form_state->getValue('slack_test_channel');
     $message = $form_state->getValue('slack_test_message');
     
     $username = $config->get('slack_username');
     $webhook_url = $config->get('slack_webhook_url');
-    
-    slack\SlackAPI::slackSendMessage($webhook_url, $message, $channel, $username);
+
+    \Drupal::service('slack')->sendMessage($webhook_url, $message, $channel, $username);
   }
 
 }
