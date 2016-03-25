@@ -52,30 +52,34 @@ function slack_send_test_message_form_submit($form, &$form_state) {
 }
 
 /**
- * Create a log in watchdog containing Slack's response information.
+ * Create a log in watchdog containing Slack's response information when message
+ * sending was failed.
  */
 function slack_watchdog_sending_error($result) {
-  $headers['Content-Type'] = $result->headers['Content-Type'];
-  $headers['Content-Length'] = $result->headers['Content-Length'];
-  $headers['Connection'] = $result->headers['Connection'];
-  $headers['Access-Control-Allow-Origin'] = $result->headers['Access-Control-Allow-Origin'];
-  $headers['Content-Security-Policy'] = $result->headers['Content-Security-Policy'];
-  $headers['Date'] = $result->headers['Date'];
-  $headers['Server'] = $result->headers['Server'];
-  $headers['Strict-Transport-Security'] = $result->headers['Strict-Transport-Security'];
-  $headers['X-Frame-Options'] = $result->headers['X-Frame-Options'];
-  $headers['X-Cache'] = $result->headers['X-Cache'];
-  $headers['Via'] = $result->headers['Via'];
-  $headers['X-Amz-Cf-Id'] = $result->headers['X-Amz-Cf-Id'];
-
-  $message = "<strong>Error message:</strong> $result->status_message<br>
-    <strong>Code:</strong> $result->code<br>
-    <strong>Request:</strong> $result->request<br><br>
-    <strong>Headers:</strong><br><ul>";
-  foreach ($headers as $key => $header) {
-    $message .= "<li>$key: $header</li>";
+  $message = '';
+  $status_message = $result->status_message;
+  if (isset($status_message)) {
+    $message .= "<strong>Error message:</strong> $status_message";
   }
-  $message .= '</ul>';
+
+  $code = $result->code;
+  if (isset($code)) {
+    $message .= "<br /><strong>Code:</strong> $code";
+  }
+
+  $request = $result->request;
+  if (isset($request)) {
+    $message .= "<br /><strong>Request:</strong> $request";
+  }
+
+  $headers = $result->headers;
+  if (isset($headers)) {
+    $message .= "<br /><br /><strong>Headers:</strong><br><ul>";
+    foreach ($headers as $key => $header) {
+      $message .= "<li>$key: $header</li>";
+    }
+    $message .= '</ul>';
+  }
 
   watchdog('slack', $message, array(), WATCHDOG_ERROR);
 }
