@@ -4,6 +4,12 @@
  * Implements hook_info().
  */
 function slack_token_info() {
+
+  $types = array(
+    'name' => t('Slack'),
+    'description' => 'Slack tokens',
+  );
+
   $tokens['slack-channel'] = array(
     'name' => t('Channel'),
     'description' => t('Name of channel.'),
@@ -40,7 +46,10 @@ function slack_token_info() {
     'global_types' => TRUE,
   );
 
-  return array('tokens' => array('slack' => $tokens));
+  return array(
+    'types' => array('slack' => $types),
+    'tokens' => array('slack' => $tokens)
+  );
 }
 
 /**
@@ -48,22 +57,28 @@ function slack_token_info() {
  */
 function slack_tokens($type, $tokens, array $data = array(), array $options = array()) {
   $replacements = array();
-  foreach ($tokens as $name => $original) {
-    if ($name == 'slack-channel') {
-      $replacements[$original] = slack_get_default_channel();
-    }
-    if ($name == 'slack-icon-url') {
-      $replacements[$original] = slack_get_default_icon_url();
-    }
-    if ($name == 'slack-icon-emoji') {
-      $replacements[$original] = slack_get_default_icon_emoji();
-    }
-    if ($name == 'slack-default-webhook-url') {
-      $replacements[$original] = slack_get_default_webhook_url();
-    }
-    if ($name == 'slack-username') {
-      $replacements[$original] = slack_get_default_username();
+  if ($type == 'slack') {
+    $sanitize = !empty($options['sanitize']);
+    foreach ($tokens as $name => $original) {
+      switch($name) {
+        case 'slack-channel':
+          $replacements[$original] = $sanitize ? check_plain(slack_get_default_channel()) : slack_get_default_channel();
+          break;
+        case 'slack-default-webhook-url':
+          $replacements[$original] = $sanitize ? check_plain(slack_get_default_webhook_url()) : slack_get_default_webhook_url();
+          break;
+        case 'slack-icon-url':
+          $replacements[$original] = $sanitize ? check_plain(slack_get_default_icon_url()) : slack_get_default_icon_url();
+          break;
+        case 'slack-icon-emoji':
+          $replacements[$original] = $sanitize ? check_plain(slack_get_default_icon_emoji()) : slack_get_default_icon_emoji();
+          break;
+        case 'slack-username':
+          $replacements[$original] = $sanitize ? check_plain(slack_get_default_username()) : slack_get_default_username();
+          break;
+      }
     }
   }
+
   return $replacements;
 }
