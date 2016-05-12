@@ -48,11 +48,21 @@ class Slack {
    * @return bool|object
    *   Slack response.
    */
-  public function sendMessage($webhook_url, $message, $channel = '', $username = '') {
+  public function sendMessage($message, $channel = '', $username = '') {
+    $config = $this->config->get('slack.settings');
+    $webhook_url = $config->get('slack_webhook_url');
     if (empty($webhook_url)) {
       drupal_set_message(t('You need to enter a webhook!'), 'error');
       return false;
     }
+
+    \Drupal::logger('slack')
+      ->info('Sending message "@message" to @channel channel as "@username"', array(
+        '@message' => $message,
+        '@channel' => $channel,
+        '@username' => $username,
+      ));
+
     $config = $this->prepareMessage($webhook_url, $channel, $username);
     $result = $this->sendRequest(
       $config['webhook_url'], $message, $config['message_options']
@@ -129,7 +139,7 @@ class Slack {
     $sending_data = 'payload=' . json_encode($message_options);
 
     try {
-      $response = $this->httpClient->request('POST', $webhook_url, array('headers' => $headers, 'body' => $sending_data, 'timeout' => 2));
+      $response = $this->httpClient->request('POST', $webhook_url, array('headers' => $headers, 'body' => $sending_data));
       \Drupal::logger('slack')->info('Message was successfully sent!');
       return $response;
     } catch (\GuzzleHttp\Exception\ServerException $e) {
