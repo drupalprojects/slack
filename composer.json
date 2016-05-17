@@ -10,7 +10,4 @@
     "issues": "http://drupal.org/project/issues/slack",
     "source": "http://cgit.drupalcode.org/slack"
   },
-  "require": {
-    "Drupal/Rules": "8.*"
-  }
 }
