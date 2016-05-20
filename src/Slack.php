@@ -136,7 +136,7 @@ class Slack {
       'Content-Type' => 'application/x-www-form-urlencoded',
     );
     $message_options['text'] = $this->processMessage($message);
-    $sending_data = 'payload=' . json_encode($message_options);
+    $sending_data = 'payload=' . urlencode(json_encode($message_options));
 
     try {
       $response = $this->httpClient->request('POST', $webhook_url, array('headers' => $headers, 'body' => $sending_data));
