@@ -45,6 +45,6 @@ class SlackSendMessage extends RulesActionBase {
     $username = $config->get('slack_username');
     $webhook_url = $config->get('slack_webhook_url');
 
-    \Drupal::service('slack')->sendMessage($webhook_url, $message, $channel, $username);
+    \Drupal::service('slack')->sendMessage($message, $channel, $username);
   }
 }
