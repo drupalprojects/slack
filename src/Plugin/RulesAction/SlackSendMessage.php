@@ -7,8 +7,10 @@
 
 namespace Drupal\slack\Plugin\RulesAction;
 
-use Drupal\slack;
+use Drupal\slack\Slack;
 use Drupal\rules\Core\RulesActionBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 
 /**
  * Provides a 'Slack send message' action.
@@ -20,31 +22,67 @@ use Drupal\rules\Core\RulesActionBase;
  *   context = {
  *     "message" = @ContextDefinition("string",
  *       label = @Translation("Message"),
- *       description = @Translation("Specify the message, which should be sent to Slack.")
+ *       description = @Translation("Specify the message, which should be sent to Slack."),
  *     ),
  *     "channel" = @ContextDefinition("string",
  *       label = @Translation("Channel"),
- *       description = @Translation("Specify the channel.")
- *     )
+ *       description = @Translation("Specify the channel."),
+ *     ),
+       "username" = @ContextDefinition("string",
+ *       label = @Translation("User name"),
+ *       description = @Translation("Specify the user name."),
+ *     ),
  *   }
  * )
  */
-class SlackSendMessage extends RulesActionBase {
+class SlackSendMessage extends RulesActionBase implements ContainerFactoryPluginInterface {
+
+
+  /**
+   * @var \Drupal\slack\Slack
+   */
+  protected $slackService;
+
+
+  /**
+   * Constructs a SlackSendMessage object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin ID for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\slack\Slack
+   *   The Slack manager service.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Slack $slack_service){
+    $this->slackService = $slack_service;
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition){
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('slack.slack_service')
+    );
+  }
 
 /**
  * Send message to slack.
- *
+ * @param string $username
+ *    The slack username.
  * @param string $message
  *    The message to be sended.
  * @param string $channel
  *    The slack channel.
  */
-  protected function doExecute($message, $channel) {
-    $config = \Drupal::configFactory()->getEditable('slack.settings');
-
-    $username = $config->get('slack_username');
-    $webhook_url = $config->get('slack_webhook_url');
-
-    \Drupal::service('slack')->sendMessage($message, $channel, $username);
+  protected function doExecute($message, $channel = '', $username = ''){
+    $this->slackService->sendMessage($message, $channel, $username);
   }
 }

@@ -69,7 +69,7 @@ class SendTestMessageForm extends FormBase {
     
     $username = $config->get('slack_username');
 
-    \Drupal::service('slack')->sendMessage($message, $channel, $username);
+    \Drupal::service('slack.slack_service')->sendMessage($message, $channel, $username);
   }
 
 }

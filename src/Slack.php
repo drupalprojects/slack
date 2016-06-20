@@ -7,6 +7,7 @@
 
 namespace Drupal\slack;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Logger\LoggerChannelInterface;
 use GuzzleHttp\ClientInterface;
 
 
@@ -25,14 +26,21 @@ class Slack {
   private $httpClient;
 
   /**
+   * @var \Drupal\Core\Logger\LoggerChannelInterface
+   */
+  private $logger;
+
+  /**
    * Constructs a Slack object.
    *
    * @param ConfigFactoryInterface $config
    * @param \GuzzleHttp\ClientInterface $http_client
+   * @param LoggerChannelInterface $logger
    */
-  public function __construct(ConfigFactoryInterface $config, ClientInterface $http_client) {
+  public function __construct(ConfigFactoryInterface $config, ClientInterface $http_client, LoggerChannelInterface $logger){
     $this->config = $config;
     $this->httpClient = $http_client;
+    $this->logger = $logger;
   }
 
   /**
@@ -56,7 +64,7 @@ class Slack {
       return false;
     }
 
-    \Drupal::logger('slack')
+    $this->logger->get('slack')
       ->info('Sending message "@message" to @channel channel as "@username"', array(
         '@message' => $message,
         '@channel' => $channel,
@@ -73,9 +81,9 @@ class Slack {
   /**
    * Prepare message meta fields for Slack.
    *
-   * @param $webhook_url
-   * @param $channel
-   * @param $username
+   * @param string $webhook_url
+   * @param string $channel
+   * @param string $username
    * @return array
    */
   private function prepareMessage($webhook_url, $channel, $username) {
@@ -137,19 +145,19 @@ class Slack {
     );
     $message_options['text'] = $this->processMessage($message);
     $sending_data = 'payload=' . urlencode(json_encode($message_options));
-
+    $logger = $this->logger->get('slack');
     try {
       $response = $this->httpClient->request('POST', $webhook_url, array('headers' => $headers, 'body' => $sending_data));
-      \Drupal::logger('slack')->info('Message was successfully sent!');
+      $logger->info('Message was successfully sent!');
       return $response;
     } catch (\GuzzleHttp\Exception\ServerException $e) {
-      \Drupal::logger('slack')->error('Server error! It may appear if you try to use unexisting chatroom.');
+      $logger->error('Server error! It may appear if you try to use unexisting chatroom.');
       return FALSE;
     } catch (\GuzzleHttp\Exception\RequestException $e) {
-      \Drupal::logger('slack')->error('Request error! It may appear if you entered the invalid Webhook value.');
+      $logger->error('Request error! It may appear if you entered the invalid Webhook value.');
       return FALSE;
     } catch (\GuzzleHttp\Exception\ConnectException $e) {
-      \Drupal::logger('slack')->error('Connection error! Something wrong with your connection. Message was\'nt sent.');
+      $logger->error('Connection error! Something wrong with your connection. Message was\'nt sent.');
       return FALSE;
     }
   }
