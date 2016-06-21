@@ -152,12 +152,15 @@ class Slack {
       return $response;
     } catch (\GuzzleHttp\Exception\ServerException $e) {
       $logger->error('Server error! It may appear if you try to use unexisting chatroom.');
+      watchdog_exception('slack', $e);
       return FALSE;
     } catch (\GuzzleHttp\Exception\RequestException $e) {
       $logger->error('Request error! It may appear if you entered the invalid Webhook value.');
+      watchdog_exception('slack', $e);
       return FALSE;
     } catch (\GuzzleHttp\Exception\ConnectException $e) {
       $logger->error('Connection error! Something wrong with your connection. Message was\'nt sent.');
+      watchdog_exception('slack', $e);
       return FALSE;
     }
   }

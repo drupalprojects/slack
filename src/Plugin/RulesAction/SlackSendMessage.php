@@ -28,7 +28,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
  *       label = @Translation("Channel"),
  *       description = @Translation("Specify the channel."),
  *     ),
-       "username" = @ContextDefinition("string",
+ *     "username" = @ContextDefinition("string",
  *       label = @Translation("User name"),
  *       description = @Translation("Specify the user name."),
  *     ),
