@@ -47,6 +47,11 @@ function slack_send_test_message_form($form, &$form_state) {
     '#title' => t('Message title link'),
     '#default_value' => variable_get('slack_attachment_title_link'),
   );
+  $form['slack_attachments']['slack_test_image_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Image link'),
+    '#default_value' => variable_get('slack_attachment_image_url'),
+  );
   $form['slack_test_message'] = array(
     '#type' => 'textarea',
     '#title' => t('Message'),
@@ -74,6 +79,7 @@ function slack_send_test_message_form_submit($form, &$form_state) {
     $attachment_options['title'] = $form_state['values']['slack_test_title'];
     $attachment_options['title_link'] = $form_state['values']['slack_test_title_link'];
     $attachment_options['color'] = $form_state['values']['slack_test_color'];
+    $attachment_options['image_url'] = $form_state['values']['slack_test_image_url'];
   }
   $icon_type = variable_get('slack_icon_type');
   $icon = variable_get('slack_icon_url');

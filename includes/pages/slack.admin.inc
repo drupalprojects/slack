@@ -108,5 +108,13 @@ function slack_configure_form($form, &$form_state) {
     '#default_value' => variable_get('slack_attachment_title_link'),
     '#states' => $attachment_state_toggle,
   );
+
+  $form['slack_attachment_image_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default url for image attachment'),
+    '#description' => t('Add the url for your image attachment.'),
+    '#default_value' => variable_get('slack_attachment_image_url'),
+    '#states' => $attachment_state_toggle,
+  );
   return system_settings_form($form);
 }
