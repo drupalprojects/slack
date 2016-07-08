@@ -7,7 +7,7 @@
 
 namespace Drupal\slack;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Logger\LoggerChannelFactory;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use GuzzleHttp\ClientInterface;
 
 
@@ -26,7 +26,7 @@ class Slack {
   private $httpClient;
 
   /**
-   * @var \Drupal\Core\Logger\LoggerChannelInterface
+   * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
    */
   private $logger;
 
@@ -35,9 +35,9 @@ class Slack {
    *
    * @param ConfigFactoryInterface $config
    * @param \GuzzleHttp\ClientInterface $http_client
-   * @param LoggerChannelFactory $logger
+   * @param LoggerChannelFactoryInterface $logger
    */
-  public function __construct(ConfigFactoryInterface $config, ClientInterface $http_client, LoggerChannelFactory $logger){
+  public function __construct(ConfigFactoryInterface $config, ClientInterface $http_client, LoggerChannelFactoryInterface $logger){
     $this->config = $config;
     $this->httpClient = $http_client;
     $this->logger = $logger;
