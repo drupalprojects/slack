@@ -27,10 +27,14 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
  *     "channel" = @ContextDefinition("string",
  *       label = @Translation("Channel"),
  *       description = @Translation("Specify the channel."),
+ *       default_value = NULL,
+ *       required = FALSE,
  *     ),
  *     "username" = @ContextDefinition("string",
  *       label = @Translation("User name"),
  *       description = @Translation("Specify the user name."),
+ *       default_value = NULL,
+ *       required = FALSE,
  *     ),
  *   }
  * )
