@@ -51,7 +51,7 @@ function slack_rules_action_info() {
       ),
       'icon' => array(
         'type' => 'text',
-        'label' => t('Icon url'),
+        'label' => t('Enter icon url'),
         'description' => t("It will be using a icon url from slack module settings, if you don't enter username here."),
         'optional' => TRUE,
       ),
@@ -75,7 +75,7 @@ function slack_rules_action_info() {
         'label' => t('Link for message title'),
         'optional' => TRUE,
       ),
-      'image_url' => array(
+       'image_url' => array(
         'type' => 'text',
         'label' => t('Image url for attachment'),
         'optional' => TRUE,
@@ -106,30 +106,11 @@ function slack_rules_send_message_action($webhook_url, $channel, $username, $mes
   }
 
   $attachment_options = array();
-  $attachment = variable_get('slack_attachment_enabled');
-  if ($attachment) {
-    if (!$color) {
-      $color = slack_get_default_attachment_color();
-    }
-    if (!$pretext) {
-      $pretext = slack_get_default_attachment_pretext();
-    }
-    if (!$title) {
-      $title = slack_get_default_attachment_title();
-    }
-    if (!$title_link) {
-      $title_link = slack_get_default_attachment_link();
-    }
-    if (!$image_url) {
-      $image_url = slack_get_default_attachment_image_url();
-    }
-    $attachment_options['color'] = $color;
-    $attachment_options['pretext'] = $pretext;
-    $attachment_options['title'] = $title;
-    $attachment_options['title_link'] = $title_link;
-    $attachment_options['image_url'] = $image_url;
-    $attachment_options['mrkdwn_in'] = slack_get_default_attachment_mrkdwn();
-  }
+  $attachment_options['color'] = $color;
+  $attachment_options['pretext'] = $pretext;
+  $attachment_options['title'] = $title;
+  $attachment_options['title_link'] = $title_link;
+  $attachment_options['image_url'] = $image_url;
 
   $icon_options = array('icon' => $icon, 'emoji' => $emoji, 'type' => $type_token);
   slack_send_message($webhook_url, $message, $channel, $username, $icon_options, $attachment_options);

@@ -116,19 +116,5 @@ function slack_configure_form($form, &$form_state) {
     '#default_value' => variable_get('slack_attachment_image_url'),
     '#states' => $attachment_state_toggle,
   );
-
-  $form['slack_attachment_mrkdwn'] = array(
-    '#type' => 'checkboxes',
-    '#title' => t('Send message with markdown'),
-    '#description' => t('Allow to send messages, based on markdown syntax like (*) for bold and (_) for italics.'),
-    '#default_value' => variable_get('slack_attachment_mrkdwn'),
-    '#options' => array (
-      'text' => t('Text'),
-      'pretext' => t('Pretext'),
-      'fields' => t('Fields')
-    ),
-    '#states' => $attachment_state_toggle,
-  );
-
   return system_settings_form($form);
 }
