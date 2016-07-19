@@ -52,6 +52,17 @@ function slack_send_test_message_form($form, &$form_state) {
     '#title' => t('Image link'),
     '#default_value' => variable_get('slack_attachment_image_url'),
   );
+  $form['slack_attachments']['slack_attachment_mrkdwn'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Send message with markdown'),
+    '#description' => t('Allow to send messages, based on markdown syntax like (*) for bold and (_) for italics.'),
+    '#default_value' => variable_get('slack_attachment_mrkdwn'),
+    '#options' => array (
+      'text' => t('Text'),
+      'pretext' => t('Pretext'),
+      'fields' => t('Fields')
+    ),
+  );
   $form['slack_test_message'] = array(
     '#type' => 'textarea',
     '#title' => t('Message'),
@@ -80,6 +91,11 @@ function slack_send_test_message_form_submit($form, &$form_state) {
     $attachment_options['title_link'] = $form_state['values']['slack_test_title_link'];
     $attachment_options['color'] = $form_state['values']['slack_test_color'];
     $attachment_options['image_url'] = $form_state['values']['slack_test_image_url'];
+    foreach ($form_state['values']['slack_attachment_mrkdwn'] as $option => $value) {
+      if ($value != '0') {
+        $attachment_options['mrkdwn_in'][] = $option;
+      }
+    }
   }
   $icon_type = variable_get('slack_icon_type');
   $icon = variable_get('slack_icon_url');

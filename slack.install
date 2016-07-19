@@ -22,4 +22,6 @@ function slack_uninstall() {
   variable_del('slack_attachment_color');
   variable_del('slack_attachment_title');
   variable_del('slack_attachment_title_link');
+  variable_del('slack_attachment_image_url');
+  variable_del('slack_attachment_mrkdwn');
 }
