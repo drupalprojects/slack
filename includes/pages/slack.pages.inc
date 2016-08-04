@@ -52,6 +52,36 @@ function slack_send_test_message_form($form, &$form_state) {
     '#title' => t('Image link'),
     '#default_value' => variable_get('slack_attachment_image_url'),
   );
+  $form['slack_attachments']['slack_test_author_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Attachment author name'),
+    '#default_value' => variable_get('slack_attachment_author_name'),
+  );
+  $form['slack_attachments']['slack_test_author_link'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Attachment author link'),
+    '#default_value' => variable_get('slack_attachment_author_link'),
+  );
+  $form['slack_attachments']['slack_test_author_icon'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Attachment author icon'),
+    '#default_value' => variable_get('slack_attachment_author_icon'),
+  );
+  $form['slack_attachments']['slack_test_footer'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Attachment footer'),
+    '#default_value' => variable_get('slack_attachment_footer'),
+  );
+  $form['slack_attachments']['slack_test_footer_icon'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Attachment footer icon'),
+    '#default_value' => variable_get('slack_attachment_footer_icon'),
+  );
+  $form['slack_attachments']['slack_test_ts'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Attachment time stamp'),
+    '#default_value' => variable_get('slack_attachment_ts'),
+  );
   $form['slack_attachments']['slack_attachment_mrkdwn'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Send message with markdown'),
@@ -91,6 +121,12 @@ function slack_send_test_message_form_submit($form, &$form_state) {
     $attachment_options['title_link'] = $form_state['values']['slack_test_title_link'];
     $attachment_options['color'] = $form_state['values']['slack_test_color'];
     $attachment_options['image_url'] = $form_state['values']['slack_test_image_url'];
+    $attachment_options['author_name'] = $form_state['values']['slack_test_author_name'];
+    $attachment_options['author_link'] = $form_state['values']['slack_test_author_link'];
+    $attachment_options['author_icon'] = $form_state['values']['slack_test_author_icon'];
+    $attachment_options['footer'] = $form_state['values']['slack_test_footer'];
+    $attachment_options['footer_icon'] = $form_state['values']['slack_test_footer_icon'];
+    $attachment_options['ts'] = $form_state['values']['slack_test_ts'];
     foreach ($form_state['values']['slack_attachment_mrkdwn'] as $option => $value) {
       if ($value != '0') {
         $attachment_options['mrkdwn_in'][] = $option;

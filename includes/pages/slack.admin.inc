@@ -117,6 +117,53 @@ function slack_configure_form($form, &$form_state) {
     '#states' => $attachment_state_toggle,
   );
 
+  $form['slack_attachment_author_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default author name for your attachment'),
+    '#description' => t('Add the author for your attachment.'),
+    '#default_value' => variable_get('slack_attachment_author_name'),
+    '#states' => $attachment_state_toggle,
+  );
+
+  $form['slack_attachment_author_link'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default link for your attachments author'),
+    '#description' => t('Add the url for your attachments author.'),
+    '#default_value' => variable_get('slack_attachment_author_link'),
+    '#states' => $attachment_state_toggle,
+  );
+
+  $form['slack_attachment_author_icon'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default author icon attachment'),
+    '#description' => t('Add the icon for your attachments author.'),
+    '#default_value' => variable_get('slack_attachment_author_icon'),
+    '#states' => $attachment_state_toggle,
+  );
+
+  $form['slack_attachment_footer'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default footer for your attachment'),
+    '#description' => t('Add a footer to your attachment.'),
+    '#default_value' => variable_get('slack_attachment_footer'),
+    '#states' => $attachment_state_toggle,
+  );
+  $form['slack_attachment_footer_icon'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default footer icon for your attachment'),
+    '#description' => t('Add a footer icon to your attachment.'),
+    '#default_value' => variable_get('slack_attachment_footer_icon'),
+    '#states' => $attachment_state_toggle,
+  );
+
+  $form['slack_attachment_ts'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default time stamp for attachment'),
+    '#description' => t('Add a time stamp to your attachment.'),
+    '#default_value' => variable_get('slack_attachment_ts'),
+    '#states' => $attachment_state_toggle,
+  );
+
   $form['slack_attachment_mrkdwn'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Send message with markdown'),

@@ -264,6 +264,72 @@ function slack_get_default_attachment_image_url() {
 }
 
 /**
+ * Get default Slack attachment author name value.
+ *
+ * @return string
+ *   Get default Slack attachment author name value.
+ */
+function slack_get_default_attachment_author_name() {
+  $attachment_author = variable_get('slack_attachment_author_name');
+  return $attachment_author;
+}
+
+/**
+ * Get default Slack attachment author link value.
+ *
+ * @return string
+ *   Get default Slack attachment author link value.
+ */
+function slack_get_default_attachment_author_link() {
+  $attachment_author_link = variable_get('slack_attachment_author_link');
+  return $attachment_author_link;
+}
+
+/**
+ * Get default Slack attachment author icon value.
+ *
+ * @return string
+ *   Get default Slack attachment author icon value.
+ */
+function slack_get_default_attachment_author_icon() {
+  $attachment_author_icon = variable_get('slack_attachment_author_icon');
+  return $attachment_author_icon;
+}
+
+/**
+ * Get default Slack attachment footer value.
+ *
+ * @return string
+ *   Get default Slack attachment footer value.
+ */
+function slack_get_default_attachment_footer() {
+  $attachment_footer = variable_get('slack_attachment_footer');
+  return $attachment_footer;
+}
+
+/**
+ * Get default Slack attachment footer icon value.
+ *
+ * @return string
+ *   Get default Slack attachment footer icon value.
+ */
+function slack_get_default_attachment_footer_icon() {
+  $attachment_footer_icon = variable_get('slack_attachment_footer_icon');
+  return $attachment_footer_icon;
+}
+
+/**
+ * Get default Slack attachment timestamp value.
+ *
+ * @return string
+ *   Get default Slack attachment timestamp value.
+ */
+function slack_get_default_attachment_ts() {
+  $attachment_ts = variable_get('slack_attachment_ts');
+  return $attachment_ts;
+}
+
+/**
  * Get default Slack attachment mrkdwn value.
  *
  * @return array
