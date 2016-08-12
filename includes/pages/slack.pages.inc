@@ -87,10 +87,10 @@ function slack_send_test_message_form($form, &$form_state) {
     '#title' => t('Send message with markdown'),
     '#description' => t('Allow to send messages, based on markdown syntax like (*) for bold and (_) for italics.'),
     '#default_value' => variable_get('slack_attachment_mrkdwn'),
-    '#options' => array (
+    '#options' => array(
       'text' => t('Text'),
       'pretext' => t('Pretext'),
-      'fields' => t('Fields')
+      'fields' => t('Fields'),
     ),
   );
   $form['slack_test_message'] = array(
@@ -115,7 +115,7 @@ function slack_send_test_message_form_submit($form, &$form_state) {
 
   $attachment_options = array();
   $use_attachments = $form_state['values']['slack_attachment_enabled'];
-  if($use_attachments) {
+  if ($use_attachments) {
     $attachment_options['pretext'] = $form_state['values']['slack_test_pretext'];
     $attachment_options['title'] = $form_state['values']['slack_test_title'];
     $attachment_options['title_link'] = $form_state['values']['slack_test_title_link'];
@@ -137,7 +137,11 @@ function slack_send_test_message_form_submit($form, &$form_state) {
   $icon = variable_get('slack_icon_url');
   $emoji = variable_get('slack_icon_emoji');
 
-  $icon_options = array('icon'=>$icon, 'emoji'=>$emoji, 'type'=>$icon_type);
+  $icon_options = array(
+    'icon' => $icon,
+    'emoji' => $emoji,
+    'type' => $icon_type,
+  );
 
   $result = slack_send_message($webhook_url, $message, $channel, '', $icon_options, $attachment_options);
   if (!$result) {

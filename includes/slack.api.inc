@@ -93,7 +93,7 @@ function _slack_send_message($webhook_url, $message, $message_options = array(),
     'Content-Type' => 'application/json',
   );
   $message = _slack_process_message($message);
-  if(empty($attachment_options)) {
+  if (empty($attachment_options)) {
     $message_options['text'] = $message;
   }
   else {
@@ -101,10 +101,16 @@ function _slack_send_message($webhook_url, $message, $message_options = array(),
     $attachment_options['text'] = $message;
 
     $message_options['attachments'] = array(
-      $attachment_options
+      $attachment_options,
     );
   }
-  $sending_data = json_encode($message_options, JSON_UNESCAPED_SLASHES);
+  $sending_data;
+  if (!defined('JSON_UNESCAPED_SLASHES')) {
+    $sending_data = str_replace('\/', '/', json_encode($message_options));
+  }
+  else {
+    $sending_data = json_encode($message_options, JSON_UNESCAPED_SLASHES);
+  }
   $options = array(
     'method' => 'POST',
     'data' => $sending_data,
@@ -141,6 +147,28 @@ function _slack_process_message($message) {
   }
   return $message;
 }
+
+// Function above works only for first link.
+// TODO: test function below
+/* function _slack_process_message($message) { */
+/*   $regexp = "<a\s[^>]*href=(\"??)([^\" >]*?)\\1[^>]*>(.*)<\/a>"; */
+/*   if (preg_match_all("/$regexp/siU", $message, $matches, PREG_SET_ORDER)) { */
+/*     $i = 1; */
+/*     $links = array(); */
+/*     foreach ($matches as $match) { */
+/*       $new_link = "<$match[2] | $match[3]>"; */
+/*       $links['link-' . $i] = $new_link; */
+/*       $message = str_replace($match[0], 'link-' . $i, $message); */
+/*       $i++; */
+/*     } */
+/*     $message = strip_tags($message); */
+/*     foreach ($links as $id => $link) { */
+/*       $message = str_replace($id, $link, $message); */
+/*     } */
+/*   } */
+/*   return $message; */
+/* } */
+
 
 /**
  * Get default Webhook URL.

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Main module file, only hooks are allowed here.
+ */
+
 define('SLACK_CODE_OK', 200);
 define('SLACK_CODE_NOT_FOUND', 404);
 define('SLACK_CODE_SERVER_ERROR', 500);

@@ -31,10 +31,11 @@ function slack_configure_form($form, &$form_state) {
   $form['slack_icon_type'] = array(
     '#type' => 'radios',
     '#title' => t('Type of image'),
-    '#options' => array (
+    '#options' => array(
       'emoji' => t('Emoji'),
       'image' => t('Image'),
-      'none' => t('None (Use default integration settings)')),
+      'none' => t('None (Use default integration settings)'),
+    ),
     '#default_value' => slack_get_default_icon_type(),
   );
   $form['slack_icon_emoji'] = array(
@@ -74,8 +75,8 @@ function slack_configure_form($form, &$form_state) {
     'visible' => array(
       ':input[name="slack_attachment_enabled"]' => array(
         'checked' => TRUE,
-      )
-    )
+      ),
+    ),
   );
   $form['slack_attachment_color'] = array(
     '#type' => 'textfield',
@@ -169,10 +170,10 @@ function slack_configure_form($form, &$form_state) {
     '#title' => t('Send message with markdown'),
     '#description' => t('Allow to send messages, based on markdown syntax like (*) for bold and (_) for italics.'),
     '#default_value' => variable_get('slack_attachment_mrkdwn'),
-    '#options' => array (
+    '#options' => array(
       'text' => t('Text'),
       'pretext' => t('Pretext'),
-      'fields' => t('Fields')
+      'fields' => t('Fields'),
     ),
     '#states' => $attachment_state_toggle,
   );

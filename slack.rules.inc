@@ -185,6 +185,10 @@ function slack_rules_send_message_action($webhook_url, $channel, $username, $mes
     $attachment_options['mrkdwn_in'] = slack_get_default_attachment_mrkdwn();
   }
 
-  $icon_options = array('icon' => $icon, 'emoji' => $emoji, 'type' => $type_token);
+  $icon_options = array(
+    'icon' => $icon,
+    'emoji' => $emoji,
+    'type' => $type_token,
+  );
   slack_send_message($webhook_url, $message, $channel, $username, $icon_options, $attachment_options);
 }
