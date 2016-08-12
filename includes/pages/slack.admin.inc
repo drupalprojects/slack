@@ -68,7 +68,7 @@ function slack_configure_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Send message with attachment styling'),
     '#description' => t('Attachments allow further styling of your messages.'),
-    '#default_value' => variable_get('slack_attachment_enabled'),
+    '#default_value' => variable_get('slack_attachment_enabled', FALSE),
   );
 
   $attachment_state_toggle = array(
@@ -169,7 +169,7 @@ function slack_configure_form($form, &$form_state) {
     '#type' => 'checkboxes',
     '#title' => t('Send message with markdown'),
     '#description' => t('Allow to send messages, based on markdown syntax like (*) for bold and (_) for italics.'),
-    '#default_value' => variable_get('slack_attachment_mrkdwn'),
+    '#default_value' => variable_get('slack_attachment_mrkdwn', array()),
     '#options' => array(
       'text' => t('Text'),
       'pretext' => t('Pretext'),

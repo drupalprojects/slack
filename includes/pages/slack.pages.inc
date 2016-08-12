@@ -17,14 +17,13 @@ function slack_send_test_message_form($form, &$form_state) {
 
   $form['slack_attachments'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Attachments options'),
+    '#title' => t('Attachment options'),
     '#collapsible' => TRUE,
     '#collapsed' => !variable_get('slack_attachment_enabled'),
   );
   $form['slack_attachments']['slack_attachment_enabled'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Enable attachments'),
-    '#description' => t('Attachments allow further styling of your messages.'),
+    '#title' => t('Enable attachment'),
     '#default_value' => variable_get('slack_attachment_enabled'),
   );
   $form['slack_attachments']['slack_test_color'] = array(
@@ -33,9 +32,14 @@ function slack_send_test_message_form($form, &$form_state) {
     '#default_value' => variable_get('slack_attachment_color'),
   );
   $form['slack_attachments']['slack_test_pretext'] = array(
-    '#type' => 'textfield',
+    '#type' => 'textarea',
     '#title' => t('Message pretext'),
     '#default_value' => variable_get('slack_attachment_pretext'),
+  );
+  $form['slack_attachments']['slack_test_attachment_text'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Attachment text'),
+    '#default_value' => variable_get('slack_attachment_text'),
   );
   $form['slack_attachments']['slack_test_title'] = array(
     '#type' => 'textfield',
@@ -96,13 +100,37 @@ function slack_send_test_message_form($form, &$form_state) {
   $form['slack_test_message'] = array(
     '#type' => 'textarea',
     '#title' => t('Message'),
-    '#required' => TRUE,
   );
   $form['submit'] = array(
     '#type' => 'submit',
+    '#validate' => array('slack_validate_test_message'),
     '#value' => t('Send message'),
   );
   return $form;
+}
+
+/**
+ * Validate if text or attachment for test message is not empty.
+ */
+function slack_validate_test_message($form, &$form_state) {
+  $message_is_empty = empty($form_state['values']['slack_test_message']);
+  $attachment_enabled = $form_state['values']['slack_attachment_enabled'];
+  // At least one of these fields must be filled to send message.
+  $fields_to_check_in_attachments = array(
+    'slack_test_pretext',
+    'slack_test_attachment_text',
+    'slack_test_footer',
+  );
+  $attachment_is_empty = TRUE;
+  foreach ($fields_to_check_in_attachments as $field_to_check) {
+    if (!empty($form_state['values'][$field_to_check])) {
+      $attachment_is_empty = FALSE;
+      break;
+    }
+  }
+  if ($message_is_empty && (!$attachment_enabled || $attachment_is_empty)) {
+    form_set_error('empty_message', t('Empty message and attachment text'));
+  }
 }
 
 /**
@@ -117,6 +145,7 @@ function slack_send_test_message_form_submit($form, &$form_state) {
   $use_attachments = $form_state['values']['slack_attachment_enabled'];
   if ($use_attachments) {
     $attachment_options['pretext'] = $form_state['values']['slack_test_pretext'];
+    $attachment_options['text'] = $form_state['values']['slack_test_attachment_text'];
     $attachment_options['title'] = $form_state['values']['slack_test_title'];
     $attachment_options['title_link'] = $form_state['values']['slack_test_title_link'];
     $attachment_options['color'] = $form_state['values']['slack_test_color'];
@@ -128,7 +157,7 @@ function slack_send_test_message_form_submit($form, &$form_state) {
     $attachment_options['footer_icon'] = $form_state['values']['slack_test_footer_icon'];
     $attachment_options['ts'] = $form_state['values']['slack_test_ts'];
     foreach ($form_state['values']['slack_attachment_mrkdwn'] as $option => $value) {
-      if ($value != '0') {
+      if ($value) {
         $attachment_options['mrkdwn_in'][] = $option;
       }
     }

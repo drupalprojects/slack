@@ -61,25 +61,6 @@ function slack_send_message($webhook_url, $message, $channel = '', $username = '
 /**
  * Send message to the Slack with more options.
  *
- * @param string $team_name
- *   Your team name in the Slack.
- * @param string $team_token
- *   The token from "Incoming WebHooks" integration in the Slack.
- * @param string $message
- *   The message sent to the channel.
- * @param array $message_options
- *   An associative array, it can contain:
- *     - channel: The channel in the Slack service to send messages
- *     - username: The bot name displayed in the channel
- *     - icon_emoji: The bot icon displayed in the channel
- *     - icon_url: The bot icon displayed in the channel
- * @param array $attachments
- *   An optional associative array to further style the message
- *        - title: an optinal title for the message
- *        - pretext: Text preceding the message
- *        - color: a color to emphasize the text body
- *        - title_link: a link associated with the message
- *
  * @return object
  *   Can contain:
  *                          success      fail          fail
@@ -92,19 +73,18 @@ function _slack_send_message($webhook_url, $message, $message_options = array(),
   $headers = array(
     'Content-Type' => 'application/json',
   );
-  $message = _slack_process_message($message);
-  if (empty($attachment_options)) {
-    $message_options['text'] = $message;
-  }
-  else {
-    $attachment_options['fallback'] = $message;
-    $attachment_options['text'] = $message;
 
-    $message_options['attachments'] = array(
-      $attachment_options,
-    );
+  $message = _slack_process_message($message);
+  $message_options['text'] = $message;
+  $attachment_options['fallback'] = $message;
+  if (!empty($attachment_options['text'])) {
+    $attachment_options['text'] = _slack_process_message($attachment_options['text']);
   }
-  $sending_data;
+
+  $message_options['attachments'] = array(
+    $attachment_options,
+  );
+  $sending_data = '';
   if (!defined('JSON_UNESCAPED_SLASHES')) {
     $sending_data = str_replace('\/', '/', json_encode($message_options));
   }
@@ -118,6 +98,7 @@ function _slack_send_message($webhook_url, $message, $message_options = array(),
   );
   $sending_url = $webhook_url;
   $result = drupal_http_request($sending_url, $options);
+
   return $result;
 }
 
@@ -128,7 +109,7 @@ function _slack_send_message($webhook_url, $message, $message_options = array(),
  *   The message sent to the channel.
  *
  * @return string
- *   Replaces links with slack friendly tags. Strips all other html.
+ *   Message with replaced links.
  */
 function _slack_process_message($message) {
   $regexp = "<a\s[^>]*href=(\"??)([^\" >]*?)\\1[^>]*>(.*)<\/a>";
@@ -168,7 +149,6 @@ function _slack_process_message($message) {
 /*   } */
 /*   return $message; */
 /* } */
-
 
 /**
  * Get default Webhook URL.
