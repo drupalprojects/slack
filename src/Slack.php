@@ -59,9 +59,10 @@ class Slack {
   public function sendMessage($message, $channel = '', $username = '') {
     $config = $this->config->get('slack.settings');
     $webhook_url = $config->get('slack_webhook_url');
+
     if (empty($webhook_url)) {
       drupal_set_message(t('You need to enter a webhook!'), 'error');
-      return false;
+      return FALSE;
     }
 
     $this->logger->get('slack')
@@ -75,6 +76,7 @@ class Slack {
     $result = $this->sendRequest(
       $config['webhook_url'], $message, $config['message_options']
     );
+
     return $result;
   }
 
@@ -86,15 +88,17 @@ class Slack {
    * @param string $username
    * @return array
    */
-  private function prepareMessage($webhook_url, $channel, $username) {
+  protected function prepareMessage($webhook_url, $channel, $username) {
     $config = $this->config->get('slack.settings');
     $message_options = array();
+
     if (!empty($channel)) {
       $message_options['channel'] = $channel;
     }
     elseif (!empty($config->get('slack_channel'))) {
       $message_options['channel'] = $config->get('slack_channel');
     }
+
     if (!empty($username)) {
       $message_options['username'] = $username;
     }
@@ -102,16 +106,18 @@ class Slack {
       $message_options['username'] = $config->get('slack_username');
     }
     $icon_type = $config->get('slack_icon_type');
+
     if ($icon_type == 'emoji') {
       $message_options['icon_emoji'] = $config->get('slack_icon_emoji');
     }
     elseif ($icon_type == 'image') {
       $message_options['icon_url'] = $config->get('slack_icon_url');
     }
-    $message_options['as_user'] = true;
+    $message_options['as_user'] = TRUE;
+
     return [
       'webhook_url' => $webhook_url,
-      'message_options' => $message_options
+      'message_options' => $message_options,
     ];
   }
 
@@ -139,13 +145,14 @@ class Slack {
    *     - code:                200        404           500
    *     - error:               -          Not found     Server Error
    */
-  private function sendRequest($webhook_url, $message, $message_options = array()) {
+  protected function sendRequest($webhook_url, $message, $message_options = array()) {
     $headers = array(
       'Content-Type' => 'application/x-www-form-urlencoded',
     );
     $message_options['text'] = $this->processMessage($message);
     $sending_data = 'payload=' . urlencode(json_encode($message_options));
     $logger = $this->logger->get('slack');
+
     try {
       $response = $this->httpClient->request('POST', $webhook_url, array('headers' => $headers, 'body' => $sending_data));
       $logger->info('Message was successfully sent!');
@@ -174,8 +181,9 @@ class Slack {
    * @return string
    *   Replaces links with slack friendly tags. Strips all other html.
    */
-  private function processMessage($message) {
+  protected function processMessage($message) {
     $regexp = "<a\s[^>]*href=(\"??)([^\" >]*?)\\1[^>]*>(.*)<\/a>";
+
     if (preg_match_all("/$regexp/siU", $message, $matches, PREG_SET_ORDER)) {
       $i = 1;
       foreach ($matches as $match) {
@@ -189,6 +197,7 @@ class Slack {
         }
       }
     }
+    
     return $message;
   }
 }
