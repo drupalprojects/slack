@@ -13,6 +13,28 @@ require_once 'includes/slack.api.inc';
 require_once 'slack.tokens.inc';
 
 /**
+ * Implementation of hook_help().
+ */
+function slack_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#slack':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The <a href="@slack">Slack</a> module brings all your communication together in one place. It has real-time messaging, archiving and search for modern teams, includes has cool system integrations features.', array('@slack' => 'https://www.drupal.org/project/slack')) . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('General') . '</dt>';
+      $output .= '<dd>' . t('The Slack module allows you to send messages from your website to Slack.') . '</dd>';
+      $output .= '<dt>' . t('Rules Integration') . '</dt>';
+      $output .= '<dd>' . t('The Slack module includes Rules module integration. Also you can use the module API in your modules') . '</dd>';
+      $output .= '<dt>' . t('Icon Support') . '</dt>';
+      $output .= '<dd>' . t('Icons support for your slackbot (icons and emoji) is included along with Slack friendly tags. If "http://www."-part is not added in href, slack will represent the link as relative path.') . '</dd>';
+      $output .= '</dl>';
+      return $output;
+  }
+}
+
+/**
  * Implements hook_menu().
  */
 function slack_menu() {
