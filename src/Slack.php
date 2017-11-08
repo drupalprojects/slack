@@ -186,18 +186,18 @@ class Slack {
 
     if (preg_match_all("/$regexp/siU", $message, $matches, PREG_SET_ORDER)) {
       $i = 1;
+      $links = [];
       foreach ($matches as $match) {
         $new_link = "<$match[2] | $match[3]>";
         $links['link-' . $i] = $new_link;
         $message = str_replace($match[0], 'link-' . $i, $message);
         $i++;
-        $message = strip_tags($message);
-        foreach ($links as $id => $link) {
-          $message = str_replace($id, $link, $message);
-        }
+      }
+      $message = strip_tags($message);
+      foreach ($links as $id => $link) {
+        $message = str_replace($id, $link, $message);
       }
     }
-    
     return $message;
   }
-}
+
