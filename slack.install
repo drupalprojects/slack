@@ -1,13 +1,6 @@
 <?php
 
 /*
- * Implements hook_install().
- */
-function slack_install() {
-  variable_set('slack_customize_icon', 'none');
-}
-
-/*
  * Implements hook_uninstall().
  */
 function slack_uninstall() {
