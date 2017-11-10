@@ -11,9 +11,11 @@ Admin -> Configuration -> Web services -> Slack -> Configuration.
 Get Webhook URL
 
 At first step you should create a webhook integration if you have no one.
-You can do it here: https://your-team-domain.slack.com/apps/manage/custom-integrations .
+You can do it here:
+https://your-team-domain.slack.com/apps/manage/custom-integrations .
 Then you should go to your webhook edit page and copy the wehook URL.
-List of your custom integrations you can find here: https://your-team-domain.slack.com/apps/manage/custom-integrations .
+List of your custom integrations you can find here: 
+https://your-team-domain.slack.com/apps/manage/custom-integrations .
 
 See for more information:
   - https://api.slack.com/custom-integrations
@@ -39,4 +41,5 @@ Useful links (about Rules module):
 
 Developer information
 ---------------------
-This module is developed and maintained by ADCI Solutions(http://www.adcisolutions.com/).
+This module is developed and maintained by ADCI Solutions
+(http://www.adcisolutions.com/).

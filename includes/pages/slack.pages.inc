@@ -186,6 +186,8 @@ function slack_send_test_message_form_submit($form, &$form_state) {
 }
 
 /**
+ * Function to sending error for watchdog.
+ *
  * Create a log in watchdog containing Slack's response information when message
  * sending was failed.
  */
