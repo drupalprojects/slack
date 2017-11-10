@@ -128,6 +128,9 @@ function slack_rules_send_message_action($webhook_url, $channel, $username, $mes
   if (!$username) {
     $username = slack_get_default_username();
   }
+  if (!$type_token) {
+    $type_token = slack_get_default_icon_type();
+  }
   if (!$emoji) {
     $emoji = slack_get_default_icon_emoji();
   }
