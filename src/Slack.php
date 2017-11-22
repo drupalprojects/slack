@@ -1,11 +1,7 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\slack\Slack.
- */
-
 namespace Drupal\slack;
+
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use GuzzleHttp\ClientInterface;

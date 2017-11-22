@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains Drupal\slack\Form\SettingsForm.
- * Configures administrative settings for slack.
- */
-
 namespace Drupal\slack\Form;
 
 use Drupal\Core\Form\ConfigFormBase;

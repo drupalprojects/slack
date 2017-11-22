@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains Drupal\slack\Form\SendTestMessageForm.
- */
-
 namespace Drupal\slack\Form;
 
 use Drupal\Core\Form\FormBase;
