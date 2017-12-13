@@ -63,11 +63,11 @@ class Slack {
     }
 
     $this->logger->get('slack')
-      ->info('Sending message "@message" to @channel channel as "@username"', [
+      ->info('Sending message "@message" to @channel channel as "@username"', array(
         '@message' => $message,
         '@channel' => $channel,
         '@username' => $username,
-      ]);
+      ));
 
     $config = $this->prepareMessage($webhook_url, $channel, $username);
     $result = $this->sendRequest(
@@ -88,7 +88,7 @@ class Slack {
    */
   protected function prepareMessage($webhook_url, $channel, $username) {
     $config = $this->config->get('slack.settings');
-    $message_options = [];
+    $message_options = array();
 
     if (!empty($channel)) {
       $message_options['channel'] = $channel;
@@ -143,19 +143,16 @@ class Slack {
    *     - code:                200        404           500
    *     - error:               -          Not found     Server Error
    */
-  protected function sendRequest($webhook_url, $message, $message_options = []) {
-    $headers = [
+  protected function sendRequest($webhook_url, $message, $message_options = array()) {
+    $headers = array(
       'Content-Type' => 'application/x-www-form-urlencoded',
-    ];
+    );
     $message_options['text'] = $this->processMessage($message);
     $sending_data = 'payload=' . urlencode(json_encode($message_options));
     $logger = $this->logger->get('slack');
 
     try {
-      $response = $this->httpClient->request('POST', $webhook_url, [
-        'headers' => $headers,
-        'body' => $sending_data
-      ]);
+      $response = $this->httpClient->request('POST', $webhook_url, array('headers' => $headers, 'body' => $sending_data));
       $logger->info('Message was successfully sent!');
       return $response;
     } catch (\GuzzleHttp\Exception\ServerException $e) {
