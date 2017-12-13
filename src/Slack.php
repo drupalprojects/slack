@@ -11,6 +11,7 @@ use GuzzleHttp\ClientInterface;
  * Send messages to Slack.
  */
 class Slack {
+
   /**
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
@@ -33,7 +34,7 @@ class Slack {
    * @param \GuzzleHttp\ClientInterface $http_client
    * @param LoggerChannelFactoryInterface $logger
    */
-  public function __construct(ConfigFactoryInterface $config, ClientInterface $http_client, LoggerChannelFactoryInterface $logger){
+  public function __construct(ConfigFactoryInterface $config, ClientInterface $http_client, LoggerChannelFactoryInterface $logger) {
     $this->config = $config;
     $this->httpClient = $http_client;
     $this->logger = $logger;
@@ -62,11 +63,11 @@ class Slack {
     }
 
     $this->logger->get('slack')
-      ->info('Sending message "@message" to @channel channel as "@username"', array(
+      ->info('Sending message "@message" to @channel channel as "@username"', [
         '@message' => $message,
         '@channel' => $channel,
         '@username' => $username,
-      ));
+      ]);
 
     $config = $this->prepareMessage($webhook_url, $channel, $username);
     $result = $this->sendRequest(
@@ -82,11 +83,12 @@ class Slack {
    * @param string $webhook_url
    * @param string $channel
    * @param string $username
+   *
    * @return array
    */
   protected function prepareMessage($webhook_url, $channel, $username) {
     $config = $this->config->get('slack.settings');
-    $message_options = array();
+    $message_options = [];
 
     if (!empty($channel)) {
       $message_options['channel'] = $channel;
@@ -141,16 +143,19 @@ class Slack {
    *     - code:                200        404           500
    *     - error:               -          Not found     Server Error
    */
-  protected function sendRequest($webhook_url, $message, $message_options = array()) {
-    $headers = array(
+  protected function sendRequest($webhook_url, $message, $message_options = []) {
+    $headers = [
       'Content-Type' => 'application/x-www-form-urlencoded',
-    );
+    ];
     $message_options['text'] = $this->processMessage($message);
     $sending_data = 'payload=' . urlencode(json_encode($message_options));
     $logger = $this->logger->get('slack');
 
     try {
-      $response = $this->httpClient->request('POST', $webhook_url, array('headers' => $headers, 'body' => $sending_data));
+      $response = $this->httpClient->request('POST', $webhook_url, [
+        'headers' => $headers,
+        'body' => $sending_data
+      ]);
       $logger->info('Message was successfully sent!');
       return $response;
     } catch (\GuzzleHttp\Exception\ServerException $e) {
@@ -196,4 +201,5 @@ class Slack {
     }
     return $message;
   }
+}
 
