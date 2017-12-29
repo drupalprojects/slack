@@ -42,36 +42,30 @@ class SendTestMessageForm extends FormBase {
       '#value' => $this->t('Send message'),
       '#button_type' => 'primary',
     );
-    if (empty($config->get('slack_webhook_url'))) {
-      $url = new RedirectResponse('../slack/config');
-      $url->send();
-
-      return FALSE;
-    }
-    else {
-      return $form;
-    }
+    return $form;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
-    $config = $this->config('slack.settings');
-    
-    $channel = $form_state->getValue('slack_test_channel');
-    $message = $form_state->getValue('slack_test_message');
-    
-    $username = $config->get('slack_username');
-
-    $response = \Drupal::service('slack.slack_service')->sendMessage($message, $channel, $username);
-
-    if ($response && RedirectResponse::HTTP_OK == $response->getStatusCode()) {
-      drupal_set_message(t('Message was successfully sent!'));
-    }
-    else {
-      drupal_set_message(t('Please check log messages for further details'), 'warning');
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    if (empty($this->config('slack.settings')->get('slack_webhook_url'))) {
+      $form_state->setRedirect('slack.admin_settings');
     }
   }
 
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    if (empty($form_state->getRedirect())) {
+      $config = $this->config('slack.settings');
+      $channel = $form_state->getValue('slack_test_channel');
+      $message = $form_state->getValue('slack_test_message');
+      $username = $config->get('slack_username');
+      $response = \Drupal::service('slack.slack_service')->sendMessage($message, $channel, $username);
+      if ($response && RedirectResponse::HTTP_OK == $response->getStatusCode()) {
+          drupal_set_message(t('Message was successfully sent!'));
+        } else {
+        drupal_set_message(t('Please check log messages for further details'), 'warning');
+      }
+    }
+  }
 }
